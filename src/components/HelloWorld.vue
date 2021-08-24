@@ -116,6 +116,28 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
+
+  mounted() {
+    this.$socket.$subscribe(
+      "add-users",
+      function (data: { [key: string]: string }) {
+        for (var i = 0; i < data.users.length; i++) {
+          var id = data.users[i];
+          const alreadyExistingUser = document.getElementById(id);
+          if (!alreadyExistingUser) {
+            var el = document.createElement("div");
+
+            el.setAttribute("id", id);
+            el.innerHTML = id;
+            el.addEventListener("click", function () {
+              // createOffer(id);
+            });
+            document.getElementById("users")?.appendChild(el);
+          }
+        }
+      }
+    );
+  }
 }
 </script>
 
