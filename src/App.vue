@@ -1,75 +1,86 @@
 <template>
-  <div id="app">
-    <div class="container">
-      <div class="flex">
-        <video
-          autoplay
-          class="rounded-xl shadow-md w-3/12 h-3/12 bg-gray-500 m-5"
-          id="remote-video"
-        ></video>
-        <div class="flex-1 bg-blue-300 m-5 max-w-lg max-h-32">
-          <div
-            class="
-              p-3
-              m-3
-              max-w-sm
-              mx-auto
-              flex
-              items-center
-              space-x-4
-              bg-white
-              rounded-xl
-              shadow-md
-            "
-          >
-            <div class="flex-shrink-0">
-              <img src="./assets/user.png" alt="avatar" class="h-8 w-8" />
-            </div>
-            <div>
-              <div class="text-left text-md font-medium text-black">User</div>
-              <p class="text-gray-500">Message 1</p>
-            </div>
-          </div>
+  <div id="app" class="max-h-full h-full w-full bg-blue-900">
+    <div class="flex flex-col sm:flex-row flex-wrap justify-items-center">
+      <div class="flex flex-1 flex-col justify-items-stretch items-strech">
+        <div class="m-4 h-1/3">
+          <video
+            autoplay
+            class="rounded-xl shadow-md bg-gray-500 h-56 w-full m-auto"
+            id="remote-video"
+          ></video>
+        </div>
+        <Users />
+        <div class="m-4 h-1/3">
+          <video
+            class="rounded-xl shadow-md bg-red-800 h-56 w-full m-auto"
+            muted
+            autoplay
+            id="local-video"
+          ></video>
         </div>
       </div>
-    </div>
-    <video
-      class="
-        rounded-xl
-        shadow-md
-        w-3/12
-        h-3/12
-        bg-red-300
-        absolute
-        bottom-0
-        right-0
-        m-5
-      "
-      muted
-      autoplay
-      id="local-video"
-    ></video>
-    <div id="users-container">
-      <h4>Users</h4>
-      <ul>
-        <li v-for="(item, key) in users" :key="key">
-          {{ key }} with {{ item }}
-        </li>
-      </ul>
+      <div class="flex flex-1 flex-col h-screen justify-items-center">
+        <div
+          class="
+            flex flex-col items-center
+            rounded-xl
+            bg-red-800 bg-opacity-90
+            p-2
+            m-4
+            h-full
+          "
+        >
+          <div class="flex-grow overflow-y-auto m-1 w-full">
+            <Message :message="msg" v-for="msg in messages" :key="msg.id" />
+          </div>
+          <input
+            type="text"
+            placeholder="enter new message.."
+            name=""
+            v-model="currMsg"
+            id="new-msg"
+            class="
+              rounded-xl
+              border border-transparent
+              focus:ring-4 focus:ring-blue-600
+              text-xs
+              w-full
+              p-3
+              space-x-4
+              mx-1
+            "
+            @keyup.enter="sendMessage"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { State } from "vuex-class";
-@Component
-export default class App extends Vue {
-  @State("users") storeUsers!: { [key: string]: string };
+import { Action, State } from "vuex-class";
+import Message from "@/components/Message.vue";
+import Users from "@/components/Users.vue";
+import { IMessage } from "./store/types";
 
-  get users() {
-    console.log(this.storeUsers);
-    return this.storeUsers;
+@Component({
+  components: {
+    Message,
+    Users,
+  },
+})
+export default class App extends Vue {
+  @Action sendMsg!: () => void;
+  @State("messages") storeMessages!: IMessage;
+  private currMsg = "";
+
+  get messages() {
+    return this.storeMessages;
+  }
+
+  public sendMessage() {
+    this.sendMsg();
   }
 }
 </script>
@@ -80,6 +91,6 @@ export default class App extends Vue {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #fff;
 }
 </style>
