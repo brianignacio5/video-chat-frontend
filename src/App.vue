@@ -22,7 +22,8 @@
       <div class="flex flex-1 flex-col h-screen justify-items-center">
         <div
           class="
-            flex flex-col items-center
+            flex flex-col
+            items-center
             rounded-xl
             bg-red-800 bg-opacity-90
             p-2
@@ -43,7 +44,7 @@
               rounded-xl
               border border-transparent
               focus:ring-4 focus:ring-blue-600
-              text-xs
+              text-xs text-black
               w-full
               p-3
               space-x-4
@@ -72,7 +73,10 @@ import { IMessage } from "./store/types";
 })
 export default class App extends Vue {
   @Action sendMsg!: () => void;
+  @Action getUserMedia!: () => void;
+  @State("displayName") storeDisplayName!: string;
   @State("messages") storeMessages!: IMessage;
+  @State("peerConnection") storePeerConnection!: RTCPeerConnection;
   private currMsg = "";
 
   get messages() {
@@ -81,6 +85,23 @@ export default class App extends Vue {
 
   public sendMessage() {
     this.sendMsg();
+    this.$socket.client.emit("sendTxtMsg", {
+      message: this.currMsg,
+      from: this.storeDisplayName,
+    });
+    this.currMsg = "";
+  }
+
+  mounted() {
+    this.storePeerConnection.ontrack = function ({ streams: [stream] }) {
+      const remoteVideo = document.getElementById(
+        "remote-video"
+      ) as HTMLVideoElement;
+      if (remoteVideo) {
+        remoteVideo.srcObject = stream;
+      }
+    };
+    this.getUserMedia();
   }
 }
 </script>

@@ -2,23 +2,18 @@
   <div
     class="
       p-3
-      max-w-sm
-      flex
-      items-center
-      space-x-4
+      flex flex-col
       bg-gray-400 bg-opacity-40
       rounded-xl
-      shadow-md
-      m-1
+      w-full
       hover:bg-red-600
+      my-2
     "
   >
-    <div>
-      <div class="text-left text-sm font-bold">
-        {{ message.userId }}
-      </div>
-      <p class="text-white text-left text-xs">{{ message.content }}</p>
+    <div class="self-end text-sm font-bold">
+      {{ message.userId }}
     </div>
+    <p class="text-xs self-end">{{ message.content }}</p>
   </div>
 </template>
 
