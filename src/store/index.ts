@@ -8,53 +8,58 @@ Vue.use(Vuex);
 interface ChatState {
   answersFrom: { [key: string]: boolean };
   constrains: { video: boolean; audio: boolean };
-  displayName: string;
   messages: IMessage[];
+  myself: IUser;
   peerConnection: RTCPeerConnection;
   users: IUser[];
+  usernameSelected: boolean;
 }
 
 const chatState: ChatState = {
   answersFrom: {},
   constrains: { video: true, audio: true },
-  displayName: "",
-  messages: [
-    { content: "some", userId: "user 1", id: "1" },
-    { content: "another", userId: "user 2", id: "2" },
-    { content: "else", userId: "user 2", id: "3" },
-    { content: "some", userId: "user 1", id: "4" },
-    { content: "another", userId: "user 2", id: "5" },
-    { content: "else", userId: "user 2", id: "6" },
-  ],
+  myself: { id: "", name: "" },
+  messages: [],
   peerConnection: new RTCPeerConnection(),
-  users: [
-    { id: "dsfrf34rk3", displayName: "user1" },
-    { id: "reg3r34g45", displayName: "user2" },
-  ],
+  users: [],
+  usernameSelected: false,
 };
 
 const mutations: MutationTree<ChatState> = {
-  setDisplayName(state, newDisplayName) {
-    const newState = state;
-    newState.displayName = newDisplayName;
-    Object.assign(state, newState);
-  },
   setNewAnswerFrom(state, socketId: string) {
     const newState = state;
     newState.answersFrom[socketId] = true;
+    Object.assign(state, newState);
+  },
+  setUsernameSelected(state, isSelected: boolean) {
+    const newState = state;
+    newState.usernameSelected = isSelected;
     Object.assign(state, newState);
   },
 };
 
 const actions: ActionTree<ChatState, any> = {
   socket_addUsers(context, payload) {
-    const userArr = payload.users as string[];
-    context.state.users = userArr.map((u) => {
-      return { id: u, displayName: "" } as IUser;
-    });
+    const users = payload.users as IUser[];
+    for (const u of users) {
+      const existingUser = context.state.users.find((user) => user.id === u.id);
+      if (!existingUser) {
+        context.state.users.push(u);
+      }
+    }
+  },
+  socket_connectError(context, err) {
+    console.log(err);
+    if (err.message === "invalid username") {
+      context.state.usernameSelected = false;
+    }
   },
   socket_messageFromServer(context, payload) {
+    console.log(payload.message);
     context.state.messages.push(payload.message);
+  },
+  socket_myUserInfo(context, payload: IUser) {
+    context.state.myself = payload;
   },
   socket_removeUser(context, id) {
     const newUsers = context.state.users.filter((user) => {
@@ -74,7 +79,7 @@ const actions: ActionTree<ChatState, any> = {
       const stream = await navigator.mediaDevices.getUserMedia(
         context.state.constrains
       );
-      console.log(stream)
+      console.log(stream);
       const video = document.getElementById("local-video") as HTMLVideoElement;
       if (video) {
         video.srcObject = stream;

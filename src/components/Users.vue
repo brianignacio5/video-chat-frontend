@@ -8,24 +8,9 @@
         class="my-1 hover:text-red-500"
         @click="createOffer(user.id)"
       >
-        {{ user.id }} : {{ user.displayName }}
+        {{ user.id }} : {{ user.name }}
       </li>
     </ul>
-    <label for="displayName">Set name in chat</label>
-    <input
-      type="text"
-      name="displayName"
-      id=""
-      class="
-        rounded-xl
-        border border-transparent
-        focus:ring-4 focus:ring-blue-600
-        text-xs
-        p-3
-        mx-1
-        text-black
-      "
-    />
   </div>
 </template>
 
@@ -34,24 +19,15 @@ import { errHandler } from "@/store/utils";
 import { Component, Vue } from "vue-property-decorator";
 import { Action, Mutation, State } from "vuex-class";
 import { Socket } from "vue-socket.io-extended";
+import { IUser } from "@/store/types";
 
 @Component
 export default class Users extends Vue {
   @Action getOffer!: (userId: string) => Promise<any>;
-  @Mutation setDisplayName!: (newVal: string) => void;
   @Mutation setNewAnswerFrom!: (socketId: string) => void;
-  @State("users") storeUsers!: { [key: string]: string };
-  @State("displayName") storeDisplayName!: string;
+  @State("users") storeUsers!: IUser[];
   @State("peerConnection") storePeerConnection!: RTCPeerConnection;
   @State("answersFrom") storeAnswersFrom!: { [key: string]: boolean };
-
-  get displayName() {
-    return this.storeDisplayName;
-  }
-
-  set displayName(newVal: string) {
-    this.setDisplayName(newVal);
-  }
 
   get users() {
     return this.storeUsers;

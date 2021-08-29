@@ -10,19 +10,33 @@
       my-2
     "
   >
-    <div class="self-end text-sm font-bold">
-      {{ message.userId }}
+    <div
+      class="text-sm font-bold"
+      :class="{ 'self-end': isMessageFromMe, 'self-start': !isMessageFromMe }"
+    >
+      {{ message.from.name }}
     </div>
-    <p class="text-xs self-end">{{ message.content }}</p>
+    <p
+      class="text-xs"
+      :class="{ 'self-end': isMessageFromMe, 'self-start': !isMessageFromMe }"
+    >
+      {{ message.content }}
+    </p>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { IMessage } from "../store/types";
+import { State } from "vuex-class";
+import { IMessage, IUser } from "../store/types";
 
 @Component
 export default class Message extends Vue {
   @Prop() message!: IMessage;
+  @State("myself") storeMyself!: IUser;
+
+  get isMessageFromMe() {
+    return this.message.from.id === this.storeMyself.id;
+  }
 }
 </script>

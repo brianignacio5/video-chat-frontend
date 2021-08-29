@@ -7,7 +7,7 @@ import "./styles.css";
 
 Vue.config.productionTip = false;
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000", { autoConnect: false});
 Vue.use(VueSocketIO, socket, { store });
 
 new Vue({

@@ -1,10 +1,10 @@
 export interface IMessage {
   id: string;
   content: string;
-  userId: string;
+  from: IUser;
 }
 
 export interface IUser{
   id: string;
-  displayName: string;
+  name: string;
 }
