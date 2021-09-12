@@ -1,11 +1,11 @@
 <template>
-  <div id="users-container" class="flex flex-col m-2 overflow-y-auto h-1/3">
-    <h4 class="text-2xl font-bold my-2">Users</h4>
+  <div id="users-container" class="flex flex-col overflow-y-auto h-full">
+    <h4 class="text-2xl font-bold my-4">Users</h4>
     <ul>
       <li
         v-for="user in users"
         :key="user.id"
-        class="my-1 hover:text-red-500"
+        class="my-1 p-2 mx-8 bg-white rounded-xl text-black hover:text-red-500"
         @click="createOffer(user.id)"
       >
         {{ user.id }} : {{ user.name }}
@@ -25,6 +25,7 @@ import { IUser } from "@/store/types";
 export default class Users extends Vue {
   @Action getOffer!: (userId: string) => Promise<any>;
   @Mutation setNewAnswerFrom!: (socketId: string) => void;
+  @Mutation setSelectedRemoteUser!: (userId: string) => void;
   @State("users") storeUsers!: IUser[];
   @State("peerConnection") storePeerConnection!: RTCPeerConnection;
   @State("answersFrom") storeAnswersFrom!: { [key: string]: boolean };
@@ -40,6 +41,7 @@ export default class Users extends Vue {
         offer: offer,
         to: id,
       });
+      this.setSelectedRemoteUser(id);
     } catch (error) {
       errHandler(error);
     }

@@ -11,6 +11,7 @@ interface ChatState {
   messages: IMessage[];
   myself: IUser;
   peerConnection: RTCPeerConnection;
+  selectedRemoteUser: IUser;
   users: IUser[];
   usernameSelected: boolean;
 }
@@ -21,6 +22,7 @@ const chatState: ChatState = {
   myself: { id: "", name: "" },
   messages: [],
   peerConnection: new RTCPeerConnection(),
+  selectedRemoteUser: { id: "", name: "" },
   users: [],
   usernameSelected: false,
 };
@@ -30,6 +32,14 @@ const mutations: MutationTree<ChatState> = {
     const newState = state;
     newState.answersFrom[socketId] = true;
     Object.assign(state, newState);
+  },
+  setSelectedRemoteUser(state, userId: string) {
+    const newState = state;
+    const existingUser = state.users.find((user) => user.id === userId);
+    if (existingUser) {
+      newState.selectedRemoteUser = existingUser;
+      Object.assign(state, newState);
+    }
   },
   setUsernameSelected(state, isSelected: boolean) {
     const newState = state;
