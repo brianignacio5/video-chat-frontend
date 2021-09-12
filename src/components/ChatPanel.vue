@@ -50,16 +50,25 @@ import { IMessage, IUser } from "@/store/types";
 export default class ChatPanel extends Vue {
   @State("messages") storeMessages!: IMessage;
   @State("myself") storeMyself!: IUser;
+  @State("selectedRemoteUser") storeSelectedRemoteUser!: IUser;
   private currMsg = "";
 
   get messages() {
     return this.storeMessages;
   }
 
+  get anotherUser() {
+    if (this.storeSelectedRemoteUser && this.storeSelectedRemoteUser.id) {
+      return this.storeSelectedRemoteUser;
+    }
+    return { id: "", name: "default" };
+  }
+
   public sendMessage() {
     this.$socket.client.emit("sendTxtMsg", {
       message: this.currMsg,
       from: this.storeMyself,
+      to: this.anotherUser.id,
     });
     this.currMsg = "";
   }

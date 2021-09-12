@@ -23,7 +23,7 @@
       :disabled="!isValid"
       class="border border-gray-500 rounded-xl p-2 hover:border-green-600"
     >
-      Connect
+      Enter chat room
     </button>
   </form>
 </template>
